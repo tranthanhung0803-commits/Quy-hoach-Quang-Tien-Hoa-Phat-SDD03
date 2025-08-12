@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet.photon.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>SDD03</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet.photon.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1.js"></script>
+        <script src="data/QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString' || e.target.feature.geometry.type === 'MultiLineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[20.952662343695266,105.38032409468737],[20.978064632364198,105.4326848638677]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var title = new L.Control({'position':'topright'});
+        title.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        title.update = function () {
+            this._div.innerHTML = '<h2>SDD03</h2>';
+        };
+        title.addTo(map);
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_VietbandoMaps_0');
+        map.getPane('pane_VietbandoMaps_0').style.zIndex = 400;
+        var layer_VietbandoMaps_0 = L.tileLayer('http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver=2016&LayerIds=VBD&Y={y}&X={x}&Level={z}', {
+            pane: 'pane_VietbandoMaps_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 22
+        });
+        layer_VietbandoMaps_0;
+        map.addLayer(layer_VietbandoMaps_0);
+        function pop_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">dienTich</th>\
+                        <td>' + (feature.properties['dienTich'] !== null ? autolinker.link(String(feature.properties['dienTich']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">loaiDat</th>\
+                        <td>' + (feature.properties['loaiDat'] !== null ? autolinker.link(String(feature.properties['loaiDat']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tangCao</th>\
+                        <td>' + (feature.properties['tangCao'] !== null ? autolinker.link(String(feature.properties['tangCao']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">heSo</th>\
+                        <td>' + (feature.properties['heSo'] !== null ? autolinker.link(String(feature.properties['heSo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">matDoXD</th>\
+                        <td>' + (feature.properties['matDoXD'] !== null ? autolinker.link(String(feature.properties['matDoXD']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">dienTichLo</th>\
+                        <td>' + (feature.properties['dienTichLo'] !== null ? autolinker.link(String(feature.properties['dienTichLo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">kyHieuLo</th>\
+                        <td>' + (feature.properties['kyHieuLo'] !== null ? autolinker.link(String(feature.properties['kyHieuLo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_0(feature) {
+            switch(String(feature.properties['loaiDat'])) {
+                default:
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(110,201,89,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Hiện trạng - Nghĩa trang':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,232,54,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Hiện trạng - Nhóm nhà ở':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(238,14,70,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Hiện trạng - Sản xuất nông nghiệp':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(140,102,77,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Cây xanh chuyên dụng':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,114,186,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Cây xanh sử dụng công cộng':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(76,40,134,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Cây xanh sử dụng hạn chế':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(131,72,85,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Đất bãi đỗ xe':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(43,173,164,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Hạ tầng kỹ thuật khác':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(170,57,218,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Hỗn hợp nhóm nhà ở và dịch vụ':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(67,138,106,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Khu dịch vụ':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(113,67,148,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Khu dịch vụ du lịch':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(90,29,143,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Nhóm nhà ở':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(160,135,53,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Rừng đặc dụng':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(65,149,194,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Sông, suối, kênh, rạch':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(111,133,63,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Thể dục thể thao':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(153,26,83,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Trường THCS, tiểu học, mầm non':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(135,194,113,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Văn hóa':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(83,161,77,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Quy hoạch - Y tế':
+                    return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(47,242,242,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1');
+        map.getPane('pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1').style.zIndex = 401;
+        map.getPane('pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1').style['mix-blend-mode'] = 'normal';
+        var layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1 = new L.geoJson(json_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+            layerName: 'layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+            pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1',
+            onEachFeature: pop_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1,
+            style: style_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_0,
+        });
+        bounds_group.addLayer(layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1);
+        map.addLayer(layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1);
+        function pop_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">TC</th>\
+                        <td>' + (feature.properties['TC'] !== null ? autolinker.link(String(feature.properties['TC']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">HS</th>\
+                        <td>' + (feature.properties['HS'] !== null ? autolinker.link(String(feature.properties['HS']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MD</th>\
+                        <td>' + (feature.properties['MD'] !== null ? autolinker.link(String(feature.properties['MD']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">DT</th>\
+                        <td>' + (feature.properties['DT'] !== null ? autolinker.link(String(feature.properties['DT']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TEN</th>\
+                        <td>' + (feature.properties['TEN'] !== null ? autolinker.link(String(feature.properties['TEN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2_0() {
+            return {
+                pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(47,179,216,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2');
+        map.getPane('pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2').style.zIndex = 402;
+        map.getPane('pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2').style['mix-blend-mode'] = 'normal';
+        var layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2 = new L.geoJson(json_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2',
+            layerName: 'layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2',
+            pane: 'pane_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2',
+            onEachFeature: pop_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2);
+        map.addLayer(layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2);
+        const url = {"Nominatim": "https://nominatim.openstreetmap.org/search?format=geojson&addressdetails=1&",
+        "BAN": "https://api-adresse.data.gouv.fr/search/?"}
+        var photonControl = L.control.photon({
+            url: url["Nominatim"],
+            feedbackLabel: '',
+            position: 'topleft',
+            includePosition: true,
+            initial: true,
+            // resultsHandler: myHandler,
+        }).addTo(map);
+        photonControl._container.childNodes[0].style.borderRadius="10px"
+        // Create a variable to store the geoJSON data
+        var x = null;
+        // Create a variable to store the marker
+        var marker = null;
+        // Add an event listener to the Photon control to create a marker from the returned geoJSON data
+        var z = null;
+        photonControl.on('selected', function(e) {
+            console.log(photonControl.search.resultsContainer);
+            if (x != null) {
+                map.removeLayer(obj3.marker);
+                map.removeLayer(x);
+            }
+            obj2.gcd = e.choice;
+            x = L.geoJSON(obj2.gcd).addTo(map);
+            var label = typeof obj2.gcd.properties.label === 'undefined' ? obj2.gcd.properties.display_name : obj2.gcd.properties.label;
+            obj3.marker = L.marker(x.getLayers()[0].getLatLng()).bindPopup(label).addTo(map);
+            map.setView(x.getLayers()[0].getLatLng(), 17);
+            z = typeof e.choice.properties.label === 'undefined'? e.choice.properties.display_name : e.choice.properties.label;
+            console.log(e);
+            e.target.input.value = z;
+        });
+        var search = document.getElementsByClassName("leaflet-photon leaflet-control")[0];
+        search.classList.add("leaflet-control-search")
+        search.style.display = "flex";
+        search.style.backgroundColor="rgba(255,255,255,0.5)" 
+
+        // Créer le nouvel élément bouton
+        var button = document.createElement("div");
+        button.id = "gcd-button-control";
+        button.className = "gcd-gl-btn fa fa-search search-button";
+
+        // Ajouter le bouton à l'élément parent
+        search.insertBefore(button, search.firstChild);
+        last = search.lastChild;
+        last.style.display = "none";
+        button.addEventListener("click", function (e) {
+            if (last.style.display === "none") {
+                last.style.display = "block";
+            } else {
+                last.style.display = "none";
+            }
+        });
+        var overlaysTree = [
+            {label: '<img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2.png" /> QH03PK_QUANGTIENHOAPHATFINAL_SDD_P', layer: layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2},
+            {label: 'QH03PK_QUANGTIENHOAPHATFINAL_SDD_A<br /><table><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_0.png" /></td><td></td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_HiệntrạngNghĩatrang1.png" /></td><td>Hiện trạng - Nghĩa trang</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_HiệntrạngNhómnhàở2.png" /></td><td>Hiện trạng - Nhóm nhà ở</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_HiệntrạngSảnxuấtnôngnghiệp3.png" /></td><td>Hiện trạng - Sản xuất nông nghiệp</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchCâyxanhchuyêndụng4.png" /></td><td>Quy hoạch - Cây xanh chuyên dụng</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchCâyxanhsửdụngcôngcộng5.png" /></td><td>Quy hoạch - Cây xanh sử dụng công cộng</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchCâyxanhsửdụnghạnchế6.png" /></td><td>Quy hoạch - Cây xanh sử dụng hạn chế</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchĐấtbãiđỗxe7.png" /></td><td>Quy hoạch - Đất bãi đỗ xe</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchHạtầngkỹthuậtkhác8.png" /></td><td>Quy hoạch - Hạ tầng kỹ thuật khác</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchHỗnhợpnhómnhàởvàdịchvụ9.png" /></td><td>Quy hoạch - Hỗn hợp nhóm nhà ở và dịch vụ</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchKhudịchvụ10.png" /></td><td>Quy hoạch - Khu dịch vụ</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchKhudịchvụdulịch11.png" /></td><td>Quy hoạch - Khu dịch vụ du lịch</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchNhómnhàở12.png" /></td><td>Quy hoạch - Nhóm nhà ở</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchRừngđặcdụng13.png" /></td><td>Quy hoạch - Rừng đặc dụng</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchSôngsuốikênhrạch14.png" /></td><td>Quy hoạch - Sông, suối, kênh, rạch</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchThểdụcthểthao15.png" /></td><td>Quy hoạch - Thể dục thể thao</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchTrườngTHCStiểuhọcmầmnon16.png" /></td><td>Quy hoạch - Trường THCS, tiểu học, mầm non</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchVănhóa17.png" /></td><td>Quy hoạch - Văn hóa</td></tr><tr><td style="text-align: center;"><img src="legend/QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1_QuyhoạchYtế18.png" /></td><td>Quy hoạch - Y tế</td></tr></table>', layer: layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1},
+            {label: "Vietbando Maps", layer: layer_VietbandoMaps_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_A_1,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'loaiDat'}));
+        if (typeof url === 'undefined') {
+            document.getElementsByClassName('search-button')[0].className += ' fa fa-binoculars';
+        } else {
+            document.getElementsByClassName('search-button')[1].className += ' fa fa-binoculars';
+        }
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"TEN": "str","loaiDat": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_TEN = document.createElement('div');
+            div_TEN.id = "div_TEN";
+            div_TEN.className= "filterselect";
+            document.getElementById("menu").appendChild(div_TEN);
+            sel_TEN = document.createElement('select');
+            sel_TEN.multiple = true;
+            sel_TEN.size = 10;
+            sel_TEN.id = "sel_TEN";
+            var TEN_options_str = "<option value='' unselected></option>";
+            sel_TEN.onchange = function(){filterFunc()};
+            TEN_options_str  += '<option value="I.BDX-01">I.BDX-01</option>';
+            TEN_options_str  += '<option value="I.CX-01">I.CX-01</option>';
+            TEN_options_str  += '<option value="I.CXCD-01">I.CXCD-01</option>';
+            TEN_options_str  += '<option value="I.CXHC-01">I.CXHC-01</option>';
+            TEN_options_str  += '<option value="I.CXHC-02">I.CXHC-02</option>';
+            TEN_options_str  += '<option value="I.CXHC-03">I.CXHC-03</option>';
+            TEN_options_str  += '<option value="I.DV-01">I.DV-01</option>';
+            TEN_options_str  += '<option value="I.GD-01">I.GD-01</option>';
+            TEN_options_str  += '<option value="I.GD-02">I.GD-02</option>';
+            TEN_options_str  += '<option value="I.GD-03">I.GD-03</option>';
+            TEN_options_str  += '<option value="I.HH-01">I.HH-01</option>';
+            TEN_options_str  += '<option value="I.HTKT-01">I.HTKT-01</option>';
+            TEN_options_str  += '<option value="I.MN-01">I.MN-01</option>';
+            TEN_options_str  += '<option value="I.MN-02">I.MN-02</option>';
+            TEN_options_str  += '<option value="I.MN-03">I.MN-03</option>';
+            TEN_options_str  += '<option value="I.NN-01">I.NN-01</option>';
+            TEN_options_str  += '<option value="I.NNO-01">I.NNO-01</option>';
+            TEN_options_str  += '<option value="I.NNO-02">I.NNO-02</option>';
+            TEN_options_str  += '<option value="I.NNO-03">I.NNO-03</option>';
+            TEN_options_str  += '<option value="I.NNO-04">I.NNO-04</option>';
+            TEN_options_str  += '<option value="I.NNO-05">I.NNO-05</option>';
+            TEN_options_str  += '<option value="I.NNO-06">I.NNO-06</option>';
+            TEN_options_str  += '<option value="I.NNO-07">I.NNO-07</option>';
+            TEN_options_str  += '<option value="I.NNO-08">I.NNO-08</option>';
+            TEN_options_str  += '<option value="I.NNO-09">I.NNO-09</option>';
+            TEN_options_str  += '<option value="I.NNO-10">I.NNO-10</option>';
+            TEN_options_str  += '<option value="I.NNO-11">I.NNO-11</option>';
+            TEN_options_str  += '<option value="I.NNO-12">I.NNO-12</option>';
+            TEN_options_str  += '<option value="I.NNO-13">I.NNO-13</option>';
+            TEN_options_str  += '<option value="I.NNO-14">I.NNO-14</option>';
+            TEN_options_str  += '<option value="I.NNO-15">I.NNO-15</option>';
+            TEN_options_str  += '<option value="I.NNO-16">I.NNO-16</option>';
+            TEN_options_str  += '<option value="I.NNO-18">I.NNO-18</option>';
+            TEN_options_str  += '<option value="I.NNO-19">I.NNO-19</option>';
+            TEN_options_str  += '<option value="I.NNO-20">I.NNO-20</option>';
+            TEN_options_str  += '<option value="I.NNO-21">I.NNO-21</option>';
+            TEN_options_str  += '<option value="I.NNO-22">I.NNO-22</option>';
+            TEN_options_str  += '<option value="I.NNO-23">I.NNO-23</option>';
+            TEN_options_str  += '<option value="I.VH-01">I.VH-01</option>';
+            TEN_options_str  += '<option value="I.YT-01">I.YT-01</option>';
+            TEN_options_str  += '<option value="II.BDX-01">II.BDX-01</option>';
+            TEN_options_str  += '<option value="II.CX-01">II.CX-01</option>';
+            TEN_options_str  += '<option value="II.CXCD-01">II.CXCD-01</option>';
+            TEN_options_str  += '<option value="II.CXHC-01">II.CXHC-01</option>';
+            TEN_options_str  += '<option value="II.CXHC-02">II.CXHC-02</option>';
+            TEN_options_str  += '<option value="II.CXHC-03">II.CXHC-03</option>';
+            TEN_options_str  += '<option value="II.CXHC-04">II.CXHC-04</option>';
+            TEN_options_str  += '<option value="II.DV-01">II.DV-01</option>';
+            TEN_options_str  += '<option value="II.DV-02">II.DV-02</option>';
+            TEN_options_str  += '<option value="II.DV-03">II.DV-03</option>';
+            TEN_options_str  += '<option value="II.DVDL-01">II.DVDL-01</option>';
+            TEN_options_str  += '<option value="II.HTKT-01">II.HTKT-01</option>';
+            TEN_options_str  += '<option value="II.HTKT-02">II.HTKT-02</option>';
+            TEN_options_str  += '<option value="II.NNO-01">II.NNO-01</option>';
+            TEN_options_str  += '<option value="II.NNO-02">II.NNO-02</option>';
+            TEN_options_str  += '<option value="II.NNO-03">II.NNO-03</option>';
+            TEN_options_str  += '<option value="II.NNO-04">II.NNO-04</option>';
+            TEN_options_str  += '<option value="II.NNO-05">II.NNO-05</option>';
+            TEN_options_str  += '<option value="II.NNO-06">II.NNO-06</option>';
+            TEN_options_str  += '<option value="II.NNO-07">II.NNO-07</option>';
+            TEN_options_str  += '<option value="II.NNO-08">II.NNO-08</option>';
+            TEN_options_str  += '<option value="II.NNO-09">II.NNO-09</option>';
+            TEN_options_str  += '<option value="II.NNO-10">II.NNO-10</option>';
+            TEN_options_str  += '<option value="II.NNO-11">II.NNO-11</option>';
+            TEN_options_str  += '<option value="II.NNO-12">II.NNO-12</option>';
+            TEN_options_str  += '<option value="II.NNO-13">II.NNO-13</option>';
+            TEN_options_str  += '<option value="II.NNO-14">II.NNO-14</option>';
+            TEN_options_str  += '<option value="II.NNO-15">II.NNO-15</option>';
+            TEN_options_str  += '<option value="II.RDD-01">II.RDD-01</option>';
+            TEN_options_str  += '<option value="II.TDTT-01">II.TDTT-01</option>';
+            TEN_options_str  += '<option value="II.TDTT-02">II.TDTT-02</option>';
+            TEN_options_str  += '<option value="III.BDX-01">III.BDX-01</option>';
+            TEN_options_str  += '<option value="III.BDX-02">III.BDX-02</option>';
+            TEN_options_str  += '<option value="III.CX-01">III.CX-01</option>';
+            TEN_options_str  += '<option value="III.CX-02">III.CX-02</option>';
+            TEN_options_str  += '<option value="III.CX-03">III.CX-03</option>';
+            TEN_options_str  += '<option value="III.CXCD-01">III.CXCD-01</option>';
+            TEN_options_str  += '<option value="III.CXCD-02">III.CXCD-02</option>';
+            TEN_options_str  += '<option value="III.CXHC-01">III.CXHC-01</option>';
+            TEN_options_str  += '<option value="III.DV-01">III.DV-01</option>';
+            TEN_options_str  += '<option value="III.GD-01">III.GD-01</option>';
+            TEN_options_str  += '<option value="III.HTKT-01">III.HTKT-01</option>';
+            TEN_options_str  += '<option value="III.HTKT-02">III.HTKT-02</option>';
+            TEN_options_str  += '<option value="III.HTKT-03">III.HTKT-03</option>';
+            TEN_options_str  += '<option value="III.HTKT-04">III.HTKT-04</option>';
+            TEN_options_str  += '<option value="III.HTKT-05">III.HTKT-05</option>';
+            TEN_options_str  += '<option value="III.MN-01">III.MN-01</option>';
+            TEN_options_str  += '<option value="III.MN-02">III.MN-02</option>';
+            TEN_options_str  += '<option value="III.NNO-01">III.NNO-01</option>';
+            TEN_options_str  += '<option value="III.NNO-02">III.NNO-02</option>';
+            TEN_options_str  += '<option value="III.NNO-03">III.NNO-03</option>';
+            TEN_options_str  += '<option value="III.NNO-04">III.NNO-04</option>';
+            TEN_options_str  += '<option value="III.NNO-05">III.NNO-05</option>';
+            TEN_options_str  += '<option value="III.NNO-06">III.NNO-06</option>';
+            TEN_options_str  += '<option value="III.NNO-07">III.NNO-07</option>';
+            TEN_options_str  += '<option value="III.NNO-08">III.NNO-08</option>';
+            TEN_options_str  += '<option value="III.VH-01">III.VH-01</option>';
+            TEN_options_str  += '<option value="III.YT-01">III.YT-01</option>';
+            TEN_options_str  += '<option value="IV.CXCD-01">IV.CXCD-01</option>';
+            TEN_options_str  += '<option value="IV.CXCD-02">IV.CXCD-02</option>';
+            TEN_options_str  += '<option value="IV.CXCD-03">IV.CXCD-03</option>';
+            TEN_options_str  += '<option value="IV.CXCD-04">IV.CXCD-04</option>';
+            TEN_options_str  += '<option value="IV.CXCD-05">IV.CXCD-05</option>';
+            TEN_options_str  += '<option value="IV.CXHC-01">IV.CXHC-01</option>';
+            TEN_options_str  += '<option value="IV.CXHC-02">IV.CXHC-02</option>';
+            TEN_options_str  += '<option value="IV.DV-01">IV.DV-01</option>';
+            TEN_options_str  += '<option value="IV.MN-01">IV.MN-01</option>';
+            TEN_options_str  += '<option value="IV.NNO-01">IV.NNO-01</option>';
+            TEN_options_str  += '<option value="IV.NNO-02">IV.NNO-02</option>';
+            TEN_options_str  += '<option value="IV.NTR-01">IV.NTR-01</option>';
+            TEN_options_str  += '<option value="IV.RDD-01">IV.RDD-01</option>';
+            sel_TEN.innerHTML = TEN_options_str;
+            div_TEN.appendChild(sel_TEN);
+            var lab_TEN = document.createElement('div');
+            lab_TEN.innerHTML = 'TEN';
+            lab_TEN.className = 'filterlabel';
+            div_TEN.appendChild(lab_TEN);
+            var reset_TEN = document.createElement('div');
+            reset_TEN.innerHTML = 'clear filter';
+            reset_TEN.className = 'filterlabel';
+            reset_TEN.onclick = function() {
+                var options = document.getElementById("sel_TEN").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_TEN.appendChild(reset_TEN);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_loaiDat = document.createElement('div');
+            div_loaiDat.id = "div_loaiDat";
+            div_loaiDat.className= "filterselect";
+            document.getElementById("menu").appendChild(div_loaiDat);
+            sel_loaiDat = document.createElement('select');
+            sel_loaiDat.multiple = true;
+            sel_loaiDat.size = 10;
+            sel_loaiDat.id = "sel_loaiDat";
+            var loaiDat_options_str = "<option value='' unselected></option>";
+            sel_loaiDat.onchange = function(){filterFunc()};
+            loaiDat_options_str  += '<option value="Hiện trạng - Nghĩa trang">Hiện trạng - Nghĩa trang</option>';
+            loaiDat_options_str  += '<option value="Hiện trạng - Nhóm nhà ở">Hiện trạng - Nhóm nhà ở</option>';
+            loaiDat_options_str  += '<option value="Hiện trạng - Sản xuất nông nghiệp">Hiện trạng - Sản xuất nông nghiệp</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Cây xanh chuyên dụng">Quy hoạch - Cây xanh chuyên dụng</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Cây xanh sử dụng công cộng">Quy hoạch - Cây xanh sử dụng công cộng</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Cây xanh sử dụng hạn chế">Quy hoạch - Cây xanh sử dụng hạn chế</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Hạ tầng kỹ thuật khác">Quy hoạch - Hạ tầng kỹ thuật khác</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Hỗn hợp nhóm nhà ở và dịch vụ">Quy hoạch - Hỗn hợp nhóm nhà ở và dịch vụ</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Khu dịch vụ">Quy hoạch - Khu dịch vụ</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Khu dịch vụ du lịch">Quy hoạch - Khu dịch vụ du lịch</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Nhóm nhà ở">Quy hoạch - Nhóm nhà ở</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Rừng đặc dụng">Quy hoạch - Rừng đặc dụng</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Sông, suối, kênh, rạch">Quy hoạch - Sông, suối, kênh, rạch</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Thể dục thể thao">Quy hoạch - Thể dục thể thao</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Trường THCS, tiểu học, mầm non">Quy hoạch - Trường THCS, tiểu học, mầm non</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Văn hóa">Quy hoạch - Văn hóa</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Y tế">Quy hoạch - Y tế</option>';
+            loaiDat_options_str  += '<option value="Quy hoạch - Đất bãi đỗ xe">Quy hoạch - Đất bãi đỗ xe</option>';
+            sel_loaiDat.innerHTML = loaiDat_options_str;
+            div_loaiDat.appendChild(sel_loaiDat);
+            var lab_loaiDat = document.createElement('div');
+            lab_loaiDat.innerHTML = 'loaiDat';
+            lab_loaiDat.className = 'filterlabel';
+            div_loaiDat.appendChild(lab_loaiDat);
+            var reset_loaiDat = document.createElement('div');
+            reset_loaiDat.innerHTML = 'clear filter';
+            reset_loaiDat.className = 'filterlabel';
+            reset_loaiDat.onclick = function() {
+                var options = document.getElementById("sel_loaiDat").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_loaiDat.appendChild(reset_loaiDat);
+        resetLabels([layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2]);
+        map.on("zoomend", function(){
+            resetLabels([layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_QH03PK_QUANGTIENHOAPHATFINAL_SDD_P_2]);
+        });
+        </script>
+    </body>
+</html>
